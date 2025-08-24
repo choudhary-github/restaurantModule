@@ -6,11 +6,12 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
   Keyboard,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, TextInput, Button, useTheme } from 'react-native-paper';
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }: { navigation: any }) => {
   const { colors } = useTheme();
 
   const [email, setEmail] = useState('');
@@ -23,6 +24,10 @@ const LoginScreen = () => {
       setLoading(false);
       console.log('Logged in with:', { email, password });
     }, 1500);
+  };
+
+  const handleSignupNavigation = () => {
+    navigation.navigate('Signup');
   };
 
   return (
@@ -62,6 +67,20 @@ const LoginScreen = () => {
             >
               Login
             </Button>
+
+            <View style={styles.signupContainer}>
+              <Text variant="bodyMedium" style={{ color: colors.onSurface }}>
+                Don't have an account?{' '}
+              </Text>
+              <Button
+                mode="text"
+                onPress={handleSignupNavigation}
+                style={styles.signupButton}
+                labelStyle={{ color: colors.primary }}
+              >
+                Sign Up
+              </Button>
+            </View>
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -85,5 +104,13 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     marginTop: 8,
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  signupButton: {
+    marginLeft: -8,
   },
 });

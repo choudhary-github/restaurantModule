@@ -10,28 +10,30 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, TextInput, Button, useTheme } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
 const SignupScreen = () => {
   const { colors } = useTheme();
+  const { navigate }: { navigate: Function } = useNavigation();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phoneNumber: '',
+    panNumber: '',
+  });
+
   const [loading, setLoading] = useState(false);
 
+  const handleChange = (key: keyof typeof form, value: string) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  };
+
   const handleSignup = () => {
-    if (password !== confirmPassword) {
-      Alert.alert("Passwords don't match");
-      return;
-    }
-
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-      console.log('Signed up with:', { name, email, password });
-    }, 1500);
+    navigate('OtpVerification');
   };
 
   return (
@@ -43,23 +45,54 @@ const SignupScreen = () => {
               Sign Up
             </Text>
 
-            <TextInput label="Name" mode="outlined" value={name} onChangeText={setName} style={styles.input} />
+            <TextInput
+              label="First Name"
+              mode="outlined"
+              value={form.firstName}
+              onChangeText={val => handleChange('firstName', val)}
+              style={styles.input}
+            />
+
+            <TextInput
+              label="Last Name"
+              mode="outlined"
+              value={form.lastName}
+              onChangeText={val => handleChange('lastName', val)}
+              style={styles.input}
+            />
 
             <TextInput
               label="Email"
               mode="outlined"
-              value={email}
-              onChangeText={setEmail}
+              value={form.email}
+              onChangeText={val => handleChange('email', val)}
               style={styles.input}
               keyboardType="email-address"
               autoCapitalize="none"
             />
 
             <TextInput
+              label="Phone Number"
+              mode="outlined"
+              value={form.phoneNumber}
+              onChangeText={val => handleChange('phoneNumber', val)}
+              style={styles.input}
+              keyboardType="phone-pad"
+            />
+
+            <TextInput
+              label="PAN Number"
+              mode="outlined"
+              value={form.panNumber}
+              onChangeText={val => handleChange('panNumber', val)}
+              style={styles.input}
+            />
+
+            <TextInput
               label="Password"
               mode="outlined"
-              value={password}
-              onChangeText={setPassword}
+              value={form.password}
+              onChangeText={val => handleChange('password', val)}
               style={styles.input}
               secureTextEntry
             />
@@ -67,8 +100,8 @@ const SignupScreen = () => {
             <TextInput
               label="Confirm Password"
               mode="outlined"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              value={form.confirmPassword}
+              onChangeText={val => handleChange('confirmPassword', val)}
               style={styles.input}
               secureTextEntry
             />
@@ -77,10 +110,12 @@ const SignupScreen = () => {
               mode="contained"
               onPress={handleSignup}
               loading={loading}
-              disabled={loading || !name || !email || !password || !confirmPassword}
+              // disabled={
+              //   loading || !form.firstName || !form.lastName || !form.email || !form.password || !form.confirmPassword
+              // }
               style={styles.button}
             >
-              Sign Up
+              Create Account
             </Button>
           </ScrollView>
         </TouchableWithoutFeedback>
