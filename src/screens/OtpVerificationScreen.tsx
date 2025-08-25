@@ -3,12 +3,20 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { useVerifyOtpMutation } from '../redux/services/authApi';
+import { setCredentials } from '../features/auth/authSlice'; // ✅ to store token/user
 
 const OtpVerificationScreen = ({ route, navigation }: any) => {
-  // const { userId, email } = route.params;
+  const { data } = route.params; // contains email or mobile from previous screen
   const { colors } = useTheme();
+
+  const dispatch = useDispatch<AppDispatch>();
   const [otp, setOtp] = useState('');
-  const [loading, setLoading] = useState(false);
+
+  // ✅ RTK Query mutation hook
+  const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
 
   const handleVerifyOtp = async () => {
     if (!otp) {
@@ -16,43 +24,30 @@ const OtpVerificationScreen = ({ route, navigation }: any) => {
       return;
     }
 
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: 'Main', state: { routes: [{ name: 'DynamicTabs' }] } }],
-    // });
+    try {
+      const result = await verifyOtp({ email: data?.email, otp }).unwrap();
 
-    //  navigation.dispatch(
-    //   CommonActions.reset({
-    //     index: 0,
-    //     routes: [{ name: 'Main' }],
-    //   })
-    // );
+      // ✅ If success → save token & user to redux
+      dispatch(
+        setCredentials({
+          user: data,
+          accessToken: result.data.token,
+          refreshToken: result.data.refreshToken,
+          // accessToken: result.data.accessToken,
+          // refreshToken: result.data.refreshToken,
+        }),
+      );
 
-    navigation.navigate("Main")
-
-    // setLoading(true);
-
-    // try {
-    //   const res = await fetch('https://yourapi.com/verify-otp', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ userId, otp }),
-    //   });
-
-    //   const data = await res.json();
-
-    //   if (data.success) {
-    //     Alert.alert('Verified Successfully');
-    //     navigation.replace('Main'); // move to main app
-    //   } else {
-    //     Alert.alert('Invalid OTP', data.message || 'Try again');
-    //   }
-    // } catch (err) {
-    //   console.error(err);
-    //   Alert.alert('Error', 'Something went wrong');
-    // } finally {
-    //   setLoading(false);
-    // }
+      // ✅ Navigate to Home (reset stack)
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        }),
+      );
+    } catch (error: any) {
+      Alert.alert('Error', error?.data?.message || 'Invalid OTP');
+    }
   };
 
   return (
@@ -69,7 +64,7 @@ const OtpVerificationScreen = ({ route, navigation }: any) => {
           style={styles.input}
           keyboardType="numeric"
         />
-        <Button mode="contained" onPress={handleVerifyOtp} loading={loading}>
+        <Button mode="contained" onPress={handleVerifyOtp} loading={isLoading} disabled={isLoading}>
           Verify
         </Button>
       </View>

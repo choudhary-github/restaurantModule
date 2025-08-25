@@ -1,24 +1,26 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import authReducer from "../features/auth/authSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import { persistStore, persistReducer } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import authReducer from '../features/auth/authSlice';
+import { authApi } from './services/authApi'; // 👈 RTK Query API
 
 const persistConfig = {
-  key: "root",
+  key: 'root',
   storage: AsyncStorage,
-  whitelist: ["auth"], // only persist auth slice
+  whitelist: ['auth'],
 };
 
-const persistedReducer = persistReducer(persistConfig, authReducer);
+const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
-    auth: persistedReducer,
+    auth: persistedAuthReducer,
+    [authApi.reducerPath]: authApi.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: false, // required for redux-persist
-    }),
+      serializableCheck: false,
+    }).concat(authApi.middleware),
 });
 
 export const persistor = persistStore(store);

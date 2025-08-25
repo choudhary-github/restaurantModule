@@ -33,7 +33,9 @@ const SignupScreen = () => {
   };
 
   const handleSignup = () => {
-    navigate('OtpVerification');
+    navigate('OtpVerification', {
+      data: form,
+    });
   };
 
   return (
@@ -97,22 +99,13 @@ const SignupScreen = () => {
               secureTextEntry
             />
 
-            <TextInput
-              label="Confirm Password"
-              mode="outlined"
-              value={form.confirmPassword}
-              onChangeText={val => handleChange('confirmPassword', val)}
-              style={styles.input}
-              secureTextEntry
-            />
-
             <Button
               mode="contained"
               onPress={handleSignup}
               loading={loading}
-              // disabled={
-              //   loading || !form.firstName || !form.lastName || !form.email || !form.password || !form.confirmPassword
-              // }
+              disabled={
+                loading || !form.firstName || !form.lastName || !form.email || !form.phoneNumber || !form.password
+              }
               style={styles.button}
             >
               Create Account

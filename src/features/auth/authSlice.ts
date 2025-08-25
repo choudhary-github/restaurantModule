@@ -1,45 +1,45 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { loginUser, signupUser, verifyOtp } from "./authThunks";
+// src/features/auth/authSlice.ts
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+interface User {
+  id?: string;
+  name?: string;
+  email?: string;
+}
 
 interface AuthState {
-  user: null | { id: string; email: string };
-  token: string | null;
-  loading: boolean;
-  error: string | null;
+  user: User | null;
+  accessToken: string | null;
+  refreshToken: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
-  token: null,
-  loading: false,
-  error: null,
+  accessToken: null,
+  refreshToken: null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    setCredentials: (
+      state,
+      action: PayloadAction<{ user?: User; accessToken: string; refreshToken: string }>
+    ) => {
+      if (action.payload.user) {
+        state.user = action.payload.user;
+      }
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+    },
     logout: (state) => {
       state.user = null;
-      state.token = null;
+      state.accessToken = null;
+      state.refreshToken = null;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(loginUser.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message ?? "Login failed";
-      });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer;

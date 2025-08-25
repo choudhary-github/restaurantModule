@@ -1,16 +1,15 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { axiosBaseQuery } from './axiosBaseQuery';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'https://your-api-url.com', // 👈 change this
-  }),
+  baseQuery: axiosBaseQuery(),
   endpoints: builder => ({
     signup: builder.mutation<{ message: string }, { email: string; password: string }>({
       query: data => ({
         url: '/auth/signup',
         method: 'POST',
-        body: data,
+        data,
       }),
     }),
 
@@ -18,7 +17,7 @@ export const authApi = createApi({
       query: data => ({
         url: '/auth/request-otp',
         method: 'POST',
-        body: data,
+        data,
       }),
     }),
 
@@ -26,7 +25,7 @@ export const authApi = createApi({
       query: data => ({
         url: '/auth/verify-otp',
         method: 'POST',
-        body: data,
+        data,
       }),
     }),
 
@@ -34,7 +33,7 @@ export const authApi = createApi({
       query: data => ({
         url: '/auth/login',
         method: 'POST',
-        body: data,
+        data,
       }),
     }),
   }),
