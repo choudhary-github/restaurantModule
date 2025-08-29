@@ -17,7 +17,10 @@ export const authApi = createApi({
       query: data => ({
         url: '/auth/request-otp',
         method: 'POST',
-        data,
+        data: {
+          channel: 'email',
+          value: data.email,
+        },
       }),
     }),
 
