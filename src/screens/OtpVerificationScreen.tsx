@@ -28,15 +28,15 @@ const OtpVerificationScreen = ({ route, navigation }: any) => {
       const result = await verifyOtp({ email: data?.email, otp }).unwrap();
 
       // ✅ If success → save token & user to redux
-      dispatch(
-        setCredentials({
-          user: data,
-          accessToken: result.data.token,
-          refreshToken: result.data.refreshToken,
-          // accessToken: result.data.accessToken,
-          // refreshToken: result.data.refreshToken,
-        }),
-      );
+      // dispatch(
+      //   setCredentials({
+      //     user: data,
+      //     accessToken: result.data.token,
+      //     refreshToken: result.data.refreshToken,
+      //     // accessToken: result.data.accessToken,
+      //     // refreshToken: result.data.refreshToken,
+      //   }),
+      // );
 
       // ✅ Navigate to Home (reset stack)
       navigation.dispatch(
